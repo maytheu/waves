@@ -11,7 +11,7 @@ const app = express();
 require("dotenv").config();
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DATABASE, { useNewUrlParser: true });
+mongoose.connect('mongodb://meto:123password@ds145911.mlab.com:45911/waves', { useNewUrlParser: true });
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
