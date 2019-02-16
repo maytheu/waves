@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 app.use(express.static('client/build'))
 
-const { Product } = require("./models/Products");
+const { Product } = require("./models/products");
 const { Wood } = require("./models/wood");
 const { Brand } = require("./models/brand");
 const { User } = require("./models/user");
