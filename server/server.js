@@ -10,7 +10,7 @@ const app = express();
 
 require("dotenv").config();
 
-//mongoose.Promise = global.Promise;
+mongoose.Promise = global.Promise;
 mongoose.connect(process.env.DATABASE, { useNewUrlParser: true });
 
 cloudinary.config({
@@ -22,6 +22,8 @@ cloudinary.config({
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+app.use(express.static('client/build'))
 
 const { Product } = require("./models/Products");
 const { Wood } = require("./models/wood");
@@ -427,6 +429,14 @@ app.post("/api/site/site_data", auth, admin, (req, res) => {
     }
   );
 });
+
+// DEFAULT 
+if( process.env.NODE_ENV === 'production' ){
+  const path = require('path');
+  app.get('/*',(req,res)=>{
+      res.sendfile(path.resolve(__dirname,'../client','build','index.html'))
+  })
+}
 
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => console.log(`Server running at port: ${PORT}`));
