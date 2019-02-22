@@ -6,6 +6,7 @@ import faPlusCircle from "@fortawesome/fontawesome-free-solid/faPlusCircle";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { USER_SERVER } from "../urlMisc";
 
+//uses clodinary to load image
 class FileUpload extends Component {
   constructor() {
     super();

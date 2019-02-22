@@ -14,6 +14,10 @@ import Product from "./component/product/Product";
 import UserCart from "./component/user/UserCart";
 import UpdateProfile from "./component/user/UpdateProfile";
 import ManageSite from "./component/user/admin/ManageSite";
+import PageNotFound from "./component/utils/PageNotFound";
+import AddFile from "./component/user/admin/AddFile";
+import Reset from "./component/register_login/resetPass/Reset";
+import ResetPassword from "./component/register_login/resetPass/ResetPassword";
 
 class Routes extends Component {
   render() {
@@ -50,6 +54,11 @@ class Routes extends Component {
             exact
             component={AuthCheck(ManageCategories, true, true)}
           />
+          <Route
+            path="/admin/add_file"
+            exact
+            component={AuthCheck(AddFile, true, true)}
+          />
 
           <Route
             path="/register"
@@ -57,18 +66,29 @@ class Routes extends Component {
             component={AuthCheck(Register, false)}
           />
           <Route
+            path="/reset"
+            exact
+            component={AuthCheck(Reset, false)}
+          />
+          <Route
+            path="/reset_password/:token"
+            exact
+            component={AuthCheck(ResetPassword, false)}
+          />
+          <Route
             path="/register_login"
             exact
             component={AuthCheck(RegisterLogin, false)}
           />
-
           <Route
             path="/product_detail/:id"
             exact
             component={AuthCheck(Product, null)}
           />
-          <Route path="/" exact component={AuthCheck(Home, null)} />
           <Route path="/shop" exact component={AuthCheck(Shop, null)} />
+          <Route path="/" exact component={AuthCheck(Home, null)} />
+
+          <Route exact component={AuthCheck(PageNotFound)} />
         </Switch>
       </Layout>
     );

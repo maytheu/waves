@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { connect } from 'react-redux';
-import {withRouter} from 'react-router-dom'
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 
-import { addToCart } from '../../actions/userActions'
+import { addToCart } from "../../actions/userActions";
 import Button from "./Button";
 
 class Card extends Component {
@@ -32,7 +32,11 @@ class Card extends Component {
             <div className="name">${props.price}</div>
           </div>
         </div>
-        {props.grid ? <div className="description">{props.description}</div> : null}
+        {props.grid ? (
+          <div className="description">
+            <p>{props.description}</p>
+          </div>
+        ) : null}
         <div className="actions">
           <div className="button_wrapp">
             <Button
@@ -49,12 +53,10 @@ class Card extends Component {
             <Button
               type="bag_link"
               runAction={() => {
-                props.user.userData.isAuth ?
-                this.props.dispatch(addToCart(props._id))
-            :
-this.props.history.push('/register_login')
-   }}
-              
+                props.user.userData.isAuth
+                  ? this.props.dispatch(addToCart(props._id))
+                  : this.props.history.push("/register_login");
+              }}
             />
           </div>
         </div>
@@ -62,9 +64,9 @@ this.props.history.push('/register_login')
     );
   }
 }
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
-      user: state.user
-  }
-}
+    user: state.user
+  };
+};
 export default connect(mapStateToProps)(withRouter(Card));

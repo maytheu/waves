@@ -41,7 +41,7 @@ class Paypal extends Component {
       sandbox:
         "Aa81eBuJjZ-JBPfE3CdwvjyfE8x3LosRzeA0JVVhbpM4ogrmJNPIdw-TE0JhorJxTWAbZbZI4rXm1rQB",
       production: ""
-    };
+    }; 
     return (
       <div>
         <PaypalExpressBtn

@@ -5,6 +5,11 @@ const cookieParser = require("cookie-parser");
 const formidable = require("express-formidable");
 const cloudinary = require("cloudinary");
 const async = require("async");
+const SHA1 = require("crypto-js/sha1");
+const multer = require("multer");
+const fs = require("fs"); //access file dir
+const path = require("path");
+const moment = require("moment");
 
 const app = express();
 
@@ -23,7 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.use(express.static('client/build'))
+app.use(express.static("client/build"));
 
 const { Product } = require("./models/products");
 const { Wood } = require("./models/wood");
@@ -35,7 +40,87 @@ const { Site } = require("./models/site");
 const { auth } = require("./middleware/auth");
 const { admin } = require("./middleware/admin");
 
-//================================= 
+// const date = new Date();
+// const po = `PO-${date.getSeconds()}${date.getMilliseconds()}-${SHA1("17176562362IDKHJFJB").toString().substring(0,8)}`
+
+// console.log(po)
+
+// UTILS
+const { sendEmail } = require("./utils/mail/mail");
+
+// const smtpTransport = mailer.createTransport({
+//     service:"Gmail",
+//     auth:{
+//         user: "maytheuhaydey@gmail.com",
+//         pass: "haydeyholah"
+//     }
+// });
+
+// var mail = {
+//     from: "Waves <maytheuhaydey@gmail.com>",
+//     to: "maytheu98@gmail.com",
+//     subject: "Send test email",
+//     text: "Testing our waves mails",
+//     html: "<b>Hellow guys this works</b>"
+// }
+
+// smtpTransport.sendMail(mail,function(error,response){
+//     if(error){
+//         console.log(error);
+//         console.log('erroe')
+//     } else {
+//         console.log('email sent')
+//     }
+//     smtpTransport.close();
+// })
+
+// STORAGE MULTER CONFIG
+let storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}_${file.originalname}`);
+  }
+  //filtering the file for .png and jpg
+
+  // fileFilter:(req,file,cb)=>{
+  //     const ext = path.extname(file.originalname)
+  //     if(ext !== '.jpg' && ext !== '.png'){
+  //         return cb(res.status(400).end('only jpg, png is allowed'),false);
+  //     }
+  //     cb(null,true)
+  // }
+});
+
+//=================================
+//             ADMIN UPLOADS
+//=================================
+
+const upload = multer({ storage: storage }).single("file");
+
+app.post("/api/users/uploadfile", auth, admin, (req, res) => {
+  upload(req, res, err => {
+    if (err) {
+      return res.json({ success: false, err });
+    }
+    return res.json({ success: true });
+  });
+});
+
+app.get("/api/users/admin_files", auth, admin, (req, res) => {
+  const dir = path.resolve(".") + "/uploads/";
+  fs.readdir(dir, (err, items) => {
+    return res.status(200).send(items);
+  });
+});
+
+app.get("/api/users/download/:id", auth, admin, (req, res) => {
+  const file = path.resolve(".") + `/uploads/${req.params.id}`;
+  res.download(file);
+});
+
+//=================================
 //             PRODUCTS
 //=================================
 
@@ -168,6 +253,54 @@ app.get("/api/products/brands", (req, res) => {
   });
 });
 
+//=================================
+//              USERS
+//=================================
+
+app.post("/api/users/reset_user", (req, res) => {
+  //send email to database for reset password
+  User.findOne({ email: req.body.email }, (err, user) => {
+    user.generateResetToken((err, user) => {
+      if (err) return res.json({ success: false, err });
+      sendEmail(user.email, user.name, null, "reset_password", user);
+      return res.json({ success: true });
+    });
+  });
+});
+
+app.post("/api/users/reset_password", (req, res) => {
+  var today = moment()
+    .startOf("day")
+    .valueOf();
+
+  User.findOne(
+    {
+      resetToken: req.body.resetToken,
+      resetTokenExp: {
+        $gte: today
+      }
+    },
+    (err, user) => {
+      if (!user)
+        return res.json({
+          success: false,
+          message: "Sorry, bad token, generate a new one."
+        });
+
+      user.password = req.body.password;
+      user.resetToken = "";
+      user.resetTokenExp = "";
+
+      user.save((err, doc) => {
+        if (err) return res.json({ success: false, err });
+        return res.status(200).json({
+          success: true
+        });
+      });
+    }
+  );
+});
+
 app.get("/api/users/auth", auth, (req, res) => {
   res.status(200).json({
     isAdmin: req.user.role === 0 ? false : true,
@@ -186,6 +319,7 @@ app.post("/api/users/register", (req, res) => {
 
   user.save((err, doc) => {
     if (err) return res.json({ success: false, err });
+    sendEmail(doc.email, doc.name, null, "welcome");
     res.status(200).json({ success: true });
   });
 });
@@ -320,10 +454,17 @@ app.get("/api/users/removeFromCart", auth, (req, res) => {
 app.post("/api/users/successBuy", auth, (req, res) => {
   let history = [];
   let transactionData = {};
+  const date = new Date();
+  const po = `PO-${date.getSeconds()}${date.getMilliseconds()}-${SHA1(
+    req.user._id
+  )
+    .toString()
+    .substring(0, 8)}`;
 
   // user history
   req.body.cartDetail.forEach(item => {
     history.push({
+      pOrder: po,
       dateOfPurchase: Date.now(),
       name: item.name,
       brand: item.brand.name,
@@ -342,7 +483,10 @@ app.post("/api/users/successBuy", auth, (req, res) => {
     lastname: req.user.lastname,
     email: req.user.email
   };
-  transactionData.data = req.body.paymentData; //paypal detail
+  transactionData.data = {
+    ...req.body.paymentData, //paypal detail
+    pOrder: po //purchase order
+  };
   transactionData.product = history; //product detail
 
   User.findOneAndUpdate(
@@ -376,6 +520,7 @@ app.post("/api/users/successBuy", auth, (req, res) => {
           },
           err => {
             if (err) return res.json({ success: false, err });
+            sendEmail(user.email, user.name, null, "purchase", transactionData);
             res.status(200).json({
               success: true,
               cart: user.cart,
@@ -430,12 +575,12 @@ app.post("/api/site/site_data", auth, admin, (req, res) => {
   );
 });
 
-// DEFAULT 
-if( process.env.NODE_ENV === 'production' ){
-  const path = require('path');
-  app.get('/*',(req,res)=>{
-      res.sendfile(path.resolve(__dirname,'../client','build','index.html'))
-  })
+// DEFAULT
+if (process.env.NODE_ENV === "production") {
+  const path = require("path");
+  app.get("/*", (req, res) => {
+    res.sendfile(path.resolve(__dirname, "../client", "build", "index.html"));
+  });
 }
 
 const PORT = process.env.PORT || 3002;

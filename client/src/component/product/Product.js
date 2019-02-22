@@ -15,18 +15,22 @@ class Product extends Component {
   componentDidMount() {
     const id = this.props.match.params.id;
     this.props.dispatch(getProductDetail(id));
-    if(!this.props.products.prodDetail){
-      this.props.history.push('/');
-  }
+    if (!this.props.products.prodDetail) {
+      this.props.history.push("/");
+    }
   }
 
   componentWillUnmount() {
     this.props.dispatch(clearProductDetail());
   }
 
-  addToCartHandler(id){
-    this.props.dispatch(addToCart(id))
-}
+  addToCartHandler(id) {
+    if (this.props.user.userData.isAuth) {
+      this.props.dispatch(addToCart(id));
+    } else {
+      this.props.history.push("/register_login");
+    }
+  }
 
   render() {
     return (
@@ -37,7 +41,7 @@ class Product extends Component {
             <div className="product_detail_wrapper">
               <div className="left">
                 <div style={{ width: "500px" }}>
-                <ProdImg detail={this.props.products.prodDetail} />
+                  <ProdImg detail={this.props.products.prodDetail} />
                 </div>
               </div>
               <div className="right">
@@ -58,7 +62,8 @@ class Product extends Component {
 
 const mapStateToProps = state => {
   return {
-    products: state.products
+    products: state.products,
+    user: state.user
   };
 };
 
