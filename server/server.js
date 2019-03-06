@@ -583,24 +583,6 @@ app.post("/api/site/site_data", auth, admin, (req, res) => {
   );
 });
 
-// app.delete("/api/site/deleteImage/:id", function(req, res) {
-//   //   Featured.findByIdAndRemove({ _id: new mongo.ObjectId(req.params.id) }, function (err, results) {
-//   //   });
-//   // console.log(req.query.id)
-//   //   res.json({ success: req.query.id })
-//   console.log(req.params.id);
-
-//   Featured.findByIdAndRemove(req.params.id, (err, result) => {
-//     // As always, handle any potential errors:
-//     if (err) return res.status(500).send(err);
-//     // We'll create a simple object to send back with a message and the id of the document that was removed
-//     // You can really do this however you want, though.
-//     const response = {
-//       message: "Todo successfully deleted"
-//     };
-//     return res.status(200).send("ok");
-//   });
-// });
 
 app.post("/api/site/featured", auth, admin, (req, res) => {
   Featured.findOneAndUpdate(
