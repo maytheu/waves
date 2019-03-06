@@ -33,8 +33,7 @@ class AddFile extends Component {
       header: { "content-type": "multipart/form-data" }
     };
     formData.append("file", files[0]);
-
-    axios.post("/api/users/uploadfile", formData, config).then(response => {
+    axios.post(`/api/users/uploadfile`, formData, config).then(response => {
       if (response.data.success) {
         this.setState(
           {

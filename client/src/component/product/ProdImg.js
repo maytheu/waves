@@ -59,6 +59,7 @@ class ProdImg extends Component {
 
   render() {
     const { detail } = this.props;
+    console.log(detail)
     return (
       <div className="product_image_container">
         <div className="main_pic">

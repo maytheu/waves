@@ -32,6 +32,7 @@ class ManageBrands extends Component {
       }
     }
   };
+  
   showCategoryItems = () =>
     this.props.products.brands
       ? this.props.products.brands.map((item, i) => (

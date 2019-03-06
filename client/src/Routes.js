@@ -18,6 +18,8 @@ import PageNotFound from "./component/utils/PageNotFound";
 import AddFile from "./component/user/admin/AddFile";
 import Reset from "./component/register_login/resetPass/Reset";
 import ResetPassword from "./component/register_login/resetPass/ResetPassword";
+import UpdateFeatured from "./component/user/admin/UpdateFeatured";
+import ManageFeatured from "./component/user/admin/ManageFeatured";
 
 class Routes extends Component {
   render() {
@@ -58,6 +60,16 @@ class Routes extends Component {
             path="/admin/add_file"
             exact
             component={AuthCheck(AddFile, true, true)}
+          />
+          <Route
+            path="/admin/update_featured"
+            exact
+            component={AuthCheck(UpdateFeatured, true, true)}
+          />
+          <Route
+            path="/admin/update_featured/:id"
+            exact
+            component={AuthCheck(ManageFeatured, true, true)}
           />
 
           <Route

@@ -36,6 +36,7 @@ const { Brand } = require("./models/brand");
 const { User } = require("./models/user");
 const { Payment } = require("./models/payments");
 const { Site } = require("./models/site");
+const { Featured } = require("./models/featured");
 
 const { auth } = require("./middleware/auth");
 const { admin } = require("./middleware/admin");
@@ -109,14 +110,21 @@ app.post("/api/users/uploadfile", auth, admin, (req, res) => {
 });
 
 app.get("/api/users/admin_files", auth, admin, (req, res) => {
-  const dir = path.resolve(".") + "/uploads/";
+  const dir = __dirname + "/../client/public/uploads/";
+  fs.readdir(dir, (err, items) => {
+    return res.status(200).send(items);
+  });
+});
+
+app.get("/api/users/home_image", (req, res) => {
+  const dir = __dirname + "/../client/public/uploads/";
   fs.readdir(dir, (err, items) => {
     return res.status(200).send(items);
   });
 });
 
 app.get("/api/users/download/:id", auth, admin, (req, res) => {
-  const file = path.resolve(".") + `/uploads/${req.params.id}`;
+  const file = __dirname + `/../client/public/uploads/${req.params.id}`;
   res.download(file);
 });
 
@@ -573,6 +581,56 @@ app.post("/api/site/site_data", auth, admin, (req, res) => {
       });
     }
   );
+});
+
+// app.delete("/api/site/deleteImage/:id", function(req, res) {
+//   //   Featured.findByIdAndRemove({ _id: new mongo.ObjectId(req.params.id) }, function (err, results) {
+//   //   });
+//   // console.log(req.query.id)
+//   //   res.json({ success: req.query.id })
+//   console.log(req.params.id);
+
+//   Featured.findByIdAndRemove(req.params.id, (err, result) => {
+//     // As always, handle any potential errors:
+//     if (err) return res.status(500).send(err);
+//     // We'll create a simple object to send back with a message and the id of the document that was removed
+//     // You can really do this however you want, though.
+//     const response = {
+//       message: "Todo successfully deleted"
+//     };
+//     return res.status(200).send("ok");
+//   });
+// });
+
+app.post("/api/site/featured", auth, admin, (req, res) => {
+  Featured.findOneAndUpdate(
+    { _id: mongoose.Types.ObjectId(req.query.id) },
+    { $set: req.body },
+    { new: true },
+    (err, doc) => {
+      if (err) return res.json({ success: false, err });
+      return res.status(200).send({
+        success: true,
+        featuredUpdate: doc
+      });
+    }
+  );
+});
+
+app.get("/api/site/featured", (req, res) => {
+  Featured.find({}, (err, featured) => {
+    if (err) return res.status(400).send(err);
+    res.status(200).send(featured);
+  });
+});
+
+//using query params
+app.get("/api/site/featured_detail", (req, res) => {
+  let items = req.query.id;
+
+  Featured.find({ _id: { $in: items } }).exec((err, docs) => {
+    return res.status(200).send(docs);
+  });
 });
 
 // DEFAULT

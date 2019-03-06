@@ -8,11 +8,13 @@ import {
   getProductsBySell
 } from "../../actions/productAction";
 import CardBlock from "../utils/CardBlock";
+import { getFeatured } from "../../actions/siteAction";
 
 class Home extends Component {
   componentDidMount() {
     this.props.dispatch(getProductsBySell());
     this.props.dispatch(getProductsByArrival());
+    this.props.dispatch(getFeatured());
   }
   render() {
     return (
@@ -21,6 +23,7 @@ class Home extends Component {
         <CardBlock
           list={this.props.products.bySell}
           title="Best Selling Guiters"
+          featured={this.props.site}
         />
         <HomePromotion />
         <CardBlock
@@ -34,7 +37,8 @@ class Home extends Component {
 
 const mapStateToProps = state => {
   return {
-    products: state.products
+    products: state.products,
+    site: state.site
   };
 };
 

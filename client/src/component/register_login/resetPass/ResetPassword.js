@@ -71,7 +71,7 @@ class ResetPassword extends Component {
     let formIsValid = isFormValid(this.state.formdata, "reset_password");
 
     if (formIsValid) {
-        Axios.post('/api/users/reset_password',
+        Axios.post(`${USER_SERVER}/reset_password`,
         {
             ...dataToSubmit,
             resetToken: this.state.resetToken

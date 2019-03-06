@@ -23,6 +23,10 @@ const admin = [
     linkTo: "/admin/site_info"
   },
   {
+    name: "Featured",
+    linkTo: "/admin/update_featured"
+  },
+  {
     name: "Add products",
     linkTo: "/admin/add_product"
   },

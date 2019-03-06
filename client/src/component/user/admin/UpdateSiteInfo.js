@@ -19,7 +19,7 @@ class UpdateSiteInfo extends Component {
         element: "input",
         value: "",
         config: {
-          label: "Adresss",
+          label: "Address",
           name: "address_input",
           type: "text",
           placeholder: "Enter the site address"
@@ -77,7 +77,7 @@ class UpdateSiteInfo extends Component {
         },
         validation: {
           required: true,
-          email: true
+          email: true 
         },
         valid: false,
         touched: false,

@@ -1,45 +1,24 @@
-import React from "react";
 import Slider from "react-slick";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
 import Button from "../utils/Button";
+import { getFeatured } from "../../actions/siteAction";
 
-const HomeSlide = props => {
-  const slides = [
-    {
-      img: "/images/featured/featured_home.jpg",
-      lineOne: "Fender",
-      lineTwo: "Custom shop",
-      linkTitle: "Shop now",
-      linkTo: "/shop"
-    },
-    {
-      img: "/images/featured/featured_home_2.jpg",
-      lineOne: "B-Stock",
-      lineTwo: "Awesome discounts",
-      linkTitle: "View offers",
-      linkTo: "/shop"
-    }
-  ];
+class HomeSlide extends Component {
+  componentDidMount() {
+    this.props.dispatch(getFeatured());
+  }
 
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: false,
-    autoplay: true
-  };
-
-  const generateSlides = () =>
-    slides
-      ? slides.map((item, i) => (
+  generateSlides = () =>
+    this.props.site.featured
+      ? this.props.site.featured.map((item, i) => (
           <div key={i}>
             <div
               className="featured_image"
               style={{
-                background: `url(${item.img})`,
-                height: `${window.innerHeight}px`,
+                background: `url(${item.images[0].url})`,
+                height: `${window.innerHeight}px`
               }}
             >
               <div className="featured_action">
@@ -61,11 +40,31 @@ const HomeSlide = props => {
         ))
       : null;
 
-  return (
-    <div className="featured_container">
-      <Slider {...settings}>{generateSlides()}</Slider>
-    </div>
-  );
+  render() {
+    const settings = {
+      dots: false,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      arrows: false,
+      autoplay: true
+    };
+
+    return (
+      <div className="featured_container">
+        <Slider {...settings}>
+          {this.generateSlides(this.props.site.featured)}
+        </Slider>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = state => {
+  return {
+    site: state.site
+  };
 };
 
-export default HomeSlide;
+export default connect(mapStateToProps)(HomeSlide);

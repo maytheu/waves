@@ -253,6 +253,7 @@ class AddProduct extends Component {
     let formIsValid = isFormValid(this.state.formdata, "products");
 
     if (formIsValid) {
+      console.log(dataToSubmit)
       this.props.dispatch(addProduct(dataToSubmit)).then(() => {
         if (this.props.products.addProduct.success) {
           this.resetFieldHandler();
@@ -263,7 +264,7 @@ class AddProduct extends Component {
     } else {
       this.setState({
         formError: true
-      });
+      }); 
     }
   };
 

@@ -27,8 +27,6 @@ class FileUpload extends Component {
     axios
       .post(`${USER_SERVER}/uploadimage`, formData, config)
       .then(response => {
-        console.log(response.data);
-
         this.setState(
           {
             uploading: false,
@@ -86,18 +84,33 @@ class FileUpload extends Component {
       <div>
         <section>
           <div className="dropzone clear">
-            <Dropzone onDrop={this.onDrop}>
-              {({ getRootProps, getInputProps, isDragActive }) => {
-                return (
-                  <div {...getRootProps()} className="dropzone_box">
-                    <input {...getInputProps()} />
-                    <div className="wrap">
-                      <FontAwesomeIcon icon={faPlusCircle} />
+            {!this.props.type ? (
+              <Dropzone onDrop={this.onDrop}>
+                {({ getRootProps, getInputProps }) => {
+                  return (
+                    <div {...getRootProps()} className="dropzone_box">
+                      <input {...getInputProps()} />
+                      <div className="wrap">
+                        <FontAwesomeIcon icon={faPlusCircle} />
+                      </div>
                     </div>
-                  </div>
-                );
-              }}
-            </Dropzone>
+                  );
+                }}
+              </Dropzone>
+            ) : this.state.uploadedFiles.length === 0 ? (
+              <Dropzone onDrop={this.onDrop}>
+                {({ getRootProps, getInputProps }) => {
+                  return (
+                    <div {...getRootProps()} className="dropzone_box">
+                      <input {...getInputProps()} />
+                      <div className="wrap">
+                        <FontAwesomeIcon icon={faPlusCircle} />
+                      </div>
+                    </div>
+                  );
+                }}
+              </Dropzone>
+            ) : null}
             {this.showUploadedImages()}
             {this.state.uploading ? (
               <div
