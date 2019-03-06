@@ -583,7 +583,6 @@ app.post("/api/site/site_data", auth, admin, (req, res) => {
   );
 });
 
-
 app.post("/api/site/featured", auth, admin, (req, res) => {
   Featured.findOneAndUpdate(
     { _id: mongoose.Types.ObjectId(req.query.id) },
