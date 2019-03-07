@@ -16,12 +16,7 @@ const app = express();
 require("dotenv").config();
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DATABASE, {
-  auth: {
-    user: process.env.MONGO_DB_USER,
-    password: process.env.MONGO_DB_PASSWORD
-  }
-});
+mongoose.connect(process.env.DATABASE, { useNewUrlParser: true });
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -34,6 +29,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use(express.static("client/build"));
+
 
 const { Product } = require("./models/products");
 const { Wood } = require("./models/wood");
