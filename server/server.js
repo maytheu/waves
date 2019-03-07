@@ -16,7 +16,12 @@ const app = express();
 require("dotenv").config();
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DATABASE, { useNewUrlParser: true });
+mongoose.connect(process.env.DATABASE, {
+  auth: {
+    user: process.env.MONGO_DB_USER,
+    password: process.env.MONGO_DB_PASSWORD
+  }
+});
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
