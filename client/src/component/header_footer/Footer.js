@@ -9,7 +9,7 @@ const Footer = ({ data }) => {
   const site = data.siteData;
   return (
     <footer className="bck_b_dark">
-      {data.siteData ? (
+      {site ? (
         <div className="container">
           <div className="logo">Waves</div>
           <div className="wrapper">
