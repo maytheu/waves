@@ -28,8 +28,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.use(express.static("client/build"));
-
 const { Product } = require("./models/products");
 const { Wood } = require("./models/wood");
 const { Brand } = require("./models/brand");
@@ -110,14 +108,14 @@ app.post("/api/users/uploadfile", auth, admin, (req, res) => {
 });
 
 app.get("/api/users/admin_files", auth, admin, (req, res) => {
-  const dir = __dirname + "/../client/public/uploads/";
+  const dir = path.resolve(__dirname + "/../client/public/uploads/");
   fs.readdir(dir, (err, items) => {
     return res.status(200).send(items);
   });
 });
 
 app.get("/api/users/home_image", (req, res) => {
-  const dir = __dirname + "/../client/public/uploads/";
+  const dir = path.resolve(__dirname + "/../client/public/uploads/");
   fs.readdir(dir, (err, items) => {
     return res.status(200).send(items);
   });
@@ -616,6 +614,7 @@ app.get("/api/site/featured_detail", (req, res) => {
 
 // DEFAULT
 if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
   const path = require("path");
   app.get("/*", (req, res) => {
     res.sendfile(path.resolve(__dirname, "../client", "build", "index.html"));
